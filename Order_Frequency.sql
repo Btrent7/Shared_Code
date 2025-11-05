@@ -9,7 +9,8 @@ WITH VCH_DATES AS(
   JOIN DCSCIM C
 	  ON C.ITMID = M3.ITMID
   WHERE calendarYear >= '2025' AND M0.POTYP = 'R' AND COPCLSCD = 'RSLE'
-  GROUP BY PLT, M3.PONBR, M3.VNDID, LSTRECPDTE, D.CALENDARDATE  -- Must GROUP BY to remove duplicate records from ITMID column
+  -- Must GROUP BY to remove duplicate records from ITMID column
+  GROUP BY PLT, M3.PONBR, M3.VNDID, LSTRECPDTE, D.CALENDARDATE
 ),
 
 -- Find Date_Diff for Each PO by Vendor and Location
