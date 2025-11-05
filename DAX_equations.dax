@@ -1,0 +1,42 @@
+-- -- -- -- -- -- -- -- -- -- -- -- --  
+      --- DAX Equation Notes ---
+-- -- -- -- -- -- -- -- -- -- -- -- --  
+
+
+-- -- -- -- -- -- -- -- -- -- -- -- --  
+      --- Partition By Customer ---
+-- -- -- -- -- -- -- -- -- -- -- -- -- 
+MAX ORDRQTY = 
+    CALCULATE(
+        MAX('Generic Sales'[ORDER_QTY]),
+        ALLEXCEPT('Generic Sales', 'Generic Sales'[CUST_NAME])
+    )
+
+
+  
+-- -- -- -- -- -- -- -- -- -- -- -- -- 
+        --- Forecast Measures ---
+-- -- -- -- -- -- -- -- -- -- -- -- -- 
+2026 FORECAST = 
+VAR SumSales =
+    (1 * [CY_2022]) +
+    (2 * [CY_2023]) +
+    (3 * [CY_2024]) +
+    (4 * [2025 PRJ. FINISH])
+VAR BaseForecast = SumSales / 10
+VAR CategoryAdj = SWITCH (
+        SalesTable[Category],
+        "Steel Pipe", BaseForecast * (1 - 0.55),
+        "Flex Products", BaseForecast * (1 + 1.5 * [AVG% DIFF]),
+        "Grooved", BaseForecast * (1 + 2 * [AVG% DIFF]),
+        "FAB", 0,
+        BaseForecast * (1 + [AVG% DIFF])
+        )
+RETURN
+    IF (
+        [2025 PRJ. FINISH] = 0
+            || SalesTable[VNDID] = "TGI05"
+            || SalesTable[VNDID] = "",
+        0,
+        CategoryAdj
+    )
