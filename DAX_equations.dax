@@ -105,3 +105,21 @@ Revenue 2024 =
                 )
             )
         )
+
+
+  
+-- -- -- -- -- -- -- -- -- -- -- -- -- 
+    --- Last Full Month Revenue ---
+-- -- -- -- -- -- -- -- -- -- -- -- --
+Revenue 2025 (Last Full Month) = 
+VAR CurrentDate = TODAY()
+VAR LastFullMonthEnd = EOMONTH(CurrentDate, -1)
+RETURN
+CALCULATE(
+    SUM('Sales_Normal'[Revenue]),
+    FILTER(
+        'Sales_Normal',
+        YEAR('Sales_Normal'[invoiceDate]) = 2025 &&
+        'Sales_Normal'[invoiceDate] <= LastFullMonthEnd
+    )
+)
