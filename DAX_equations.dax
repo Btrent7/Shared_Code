@@ -17,7 +17,7 @@ MAX ORDRQTY =
 -- -- -- -- -- -- -- -- -- -- -- -- -- 
       --- Forecast Growth % ---
 -- -- -- -- -- -- -- -- -- -- -- -- -- 
-AVG% DIFF = 
+Avg. Growth % = 
 VAR diff23 = IF([CY_2023] + [CY_2022] <> 0, MIN(([CY_2023] - [CY_2022]) / ([CY_2023] + [CY_2022]), 1), 0)
 VAR diff24 = IF([CY_2024] + [CY_2023] <> 0, MIN(([CY_2024] - [CY_2023]) / ([CY_2024] + [CY_2023]), 1), 0)
 VAR diff25 = IF([CY_2025] + [CY_2024] <> 0, MIN(([CY_2025] - [CY_2024]) / ([CY_2025] + [CY_2024]), 1), 0)
@@ -58,3 +58,35 @@ RETURN
         0,
         CategoryAdj
     )
+
+
+  
+-- -- -- -- -- -- -- -- -- -- -- -- -- 
+--- Forecast Current Year Growth % ---
+-- -- -- -- -- -- -- -- -- -- -- -- -- 
+2025 Revenue Growth% = 
+VAR CurrentDate = TODAY()
+VAR LastFullMonth = MONTH(EOMONTH(CurrentDate, -1))
+VAR Revenue2025 =
+    CALCULATE(
+        [Revenue 2025],
+        FILTER(
+            'Sales_Normal',
+            YEAR('Sales_Normal'[invoiceDate]) = 2025 &&
+            MONTH('Sales_Normal'[invoiceDate]) <= LastFullMonth
+        )
+    )
+VAR Revenue2024 =
+    CALCULATE(
+        [Revenue 2024],
+        FILTER(
+            'Sales_Normal',
+            YEAR('Sales_Normal'[invoiceDate]) = 2024 &&
+            MONTH('Sales_Normal'[invoiceDate]) <= LastFullMonth
+        )
+    )
+VAR Diff = Revenue2025 - Revenue2024
+VAR DiffPct = DIVIDE(Diff, Revenue2024)
+RETURN
+    IF(Revenue2025 > 0, DiffPct, BLANK())
+
